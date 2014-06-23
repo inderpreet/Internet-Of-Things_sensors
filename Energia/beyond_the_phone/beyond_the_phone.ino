@@ -47,12 +47,13 @@ unsigned int uiTTF = 0;
 static struct ipFrame *rfFrame;
 
 //int CHARGE_PIN A5;
-//int EN_PIN     P1.6;
-//int PG_PIN P3.2
+//int EN_PIN     P1_6;
+//int PG_PIN     P3_2
 
-int tempSensor = A0;          // Pin for Temperature Sensor
-int sensorTemperature   = 0;  // Temperature Value in Celcius
-int crateSwitch = 0;
+int tempSensor           = A0;          // Pin for Temperature Sensor
+int sensorTemperature    = 0;  // Temperature Value in Celcius
+int crateSwitchPin       = P3_6;
+int crateSwitch          =0;
 // Function for printing data
 // Comment out anything you don't want
 void printFuel(void){
@@ -150,7 +151,11 @@ void taskFuelGauge(void){
 
 int getTemperature(void){
       int temp;
-      temp = (0.5* analogRead(tempSensor)*100.0)/1024;
+      float tempC;
+      temp = (analogRead(tempSensor));
+      tempC = temp*330.0;    // 3300mV Reff /10
+      tempC /= 4096.0;    // 12bit res 4096
+      temp = (int)tempC;
       return temp;
 }
 
@@ -172,15 +177,20 @@ void setup(void){
         backchannelSerial.println("By: Inderpreet Singh");
         //rfSerial.println("Test Message");        
         rfFrame = (ipFrame*)malloc(sizeof(ipFrame));
+        //analogReference(INTERNAL);
+        pinMode(tempSensor, INPUT);
+        pinMode(crateSwitchPin, INPUT);
 }
 
 // Run forever Loop
 void loop(void){
 	taskFuelGauge();
-        printFuel();
+        //printFuel();
         sensorTemperature = getTemperature();
+        crateSwitch = digitalRead(crateSwitchPin);
         rfFrameUpdate();
-        rfSendSerial();        
+        rfSendSerial(); 
+        backchannelSerial.print(sensorTemperature);   
         // power off and sleep for about 5 seconds
         delay(5000);
 }
