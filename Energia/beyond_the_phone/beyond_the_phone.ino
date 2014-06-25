@@ -52,7 +52,7 @@ static struct ipFrame *rfFrame;
 
 int tempSensor           = A0;          // Pin for Temperature Sensor
 int sensorTemperature    = 0;  // Temperature Value in Celcius
-int crateSwitchPin       = P3_6;
+int crateSwitchPin       = P6_1;
 int crateSwitch          =0;
 // Function for printing data
 // Comment out anything you don't want
@@ -179,6 +179,7 @@ void setup(void){
         rfFrame = (ipFrame*)malloc(sizeof(ipFrame));
         //analogReference(INTERNAL);
         pinMode(tempSensor, INPUT);
+        pinMode(crateSwitch, INPUT_PULLUP);
         pinMode(crateSwitchPin, INPUT);
 }
 
